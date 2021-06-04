@@ -35,6 +35,7 @@ func Router(conf config.Config, rooms *ws.Rooms, users *auth.Users, version stri
 	router.HandleFunc("/stream", rooms.Upgrade)
 	router.Methods("POST").Path("/login").HandlerFunc(users.Authenticate)
 	router.Methods("POST").Path("/logout").HandlerFunc(users.Logout)
+	router.Methods("GET").Path("/oauth").HandlerFunc(users.OauthHandler)
 	router.Methods("GET").Path("/config").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user, loggedIn := users.CurrentUser(r)
 		_ = json.NewEncoder(w).Encode(&UIConfig{
@@ -65,6 +66,7 @@ func accessLogger(r *http.Request, status, size int, dur time.Duration) {
 		Str("duration", dur.String()).
 		Msg("HTTP")
 }
+
 
 func basicAuth(handler http.Handler, users *auth.Users) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

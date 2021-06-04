@@ -15,6 +15,11 @@ export const LoginForm = ({config: {login}, hide}: {config: UseConfig; hide?: ()
     const [user, setUser] = React.useState('');
     const [pass, setPass] = React.useState('');
     const [loading, setLoading] = React.useState(false);
+    const oauth = async (event: {preventDefault: () => void}) => {
+        event.preventDefault();
+        setLoading(true);
+        window.location.href = `https://keycloak.brickfire.eu/auth/realms/develop/protocol/openid-connect/auth?client_id=screego_dev&redirect_uri=http://localhost:5050/oauth&response_type=code`
+    }
     const submit = async (event: {preventDefault: () => void}) => {
         event.preventDefault();
         setLoading(true);
@@ -58,6 +63,13 @@ export const LoginForm = ({config: {login}, hide}: {config: UseConfig; hide?: ()
                         fullWidth
                         variant="contained">
                         Login
+                    </LoadingButton>
+                    <LoadingButton
+                        loading={loading}
+                        onClick={oauth}
+                        fullWidth
+                        variant="contained">
+                        oAuth
                     </LoadingButton>
                 </form>
             </FormControl>

@@ -3,6 +3,9 @@ module github.com/screego/server
 go 1.16
 
 require (
+	github.com/coreos/go-oidc/v3 v3.0.0 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/gobuffalo/gogen v0.0.0-20190315121717-8f38393713f5 // indirect
 	github.com/gobuffalo/packr/v2 v2.2.0
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
@@ -21,4 +24,5 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/urfave/cli v1.20.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c // indirect
 )
