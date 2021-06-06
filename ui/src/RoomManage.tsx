@@ -87,11 +87,17 @@ const CreateRoom = ({room, config}: Pick<UseRoom, 'room'> & {config: UIConfig}) 
     );
 };
 
+let wait = false
 export const RoomManage = ({room, config}: {room: FCreateRoom; config: UseConfig}) => {
     const [showLogin, setShowLogin] = React.useState(false);
 
     const canCreateRoom = config.authMode !== 'all';
     const loginVisible = !config.loggedIn && (showLogin || !canCreateRoom);
+
+    if(!wait && window.location.pathname === "/oauth"){
+        wait = true
+        config.oauth().finally(() => wait = false)
+    }
 
     return (
         <Grid

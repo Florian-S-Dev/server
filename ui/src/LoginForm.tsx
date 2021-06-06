@@ -11,14 +11,15 @@ import {
 import {makeStyles} from '@material-ui/core/styles';
 import {green} from '@material-ui/core/colors';
 
-export const LoginForm = ({config: {login}, hide}: {config: UseConfig; hide?: () => void}) => {
+export const LoginForm = ({config: {login, loginoauth}, hide}: {config: UseConfig; hide?: () => void}) => {
     const [user, setUser] = React.useState('');
     const [pass, setPass] = React.useState('');
     const [loading, setLoading] = React.useState(false);
-    const oauth = async (event: {preventDefault: () => void}) => {
+    const oauthlogin = async (event: {preventDefault: () => void}) => {
         event.preventDefault();
         setLoading(true);
-        window.location.href = `https://keycloak.brickfire.eu/auth/realms/develop/protocol/openid-connect/auth?client_id=screego_dev&redirect_uri=http://localhost:3000/oauth&response_type=code&scope=openid+profile+email`
+        loginoauth().then((url) => window.location.href = url)
+
     }
     const submit = async (event: {preventDefault: () => void}) => {
         event.preventDefault();
@@ -67,7 +68,7 @@ export const LoginForm = ({config: {login}, hide}: {config: UseConfig; hide?: ()
                     </LoadingButton>
                     <hr/>
                     <Button
-                        onClick={oauth}
+                        onClick={oauthlogin}
                         fullWidth
                         variant="outlined">
                         oAuth

@@ -136,3 +136,4 @@ func (u *Users) SaveUser(w http.ResponseWriter,r *http.Request, user string) {
 		return
 	}
 }
+

@@ -35,9 +35,15 @@ func Router(conf config.Config, rooms *ws.Rooms, users *auth.Users, version stri
 	router.HandleFunc("/stream", rooms.Upgrade)
 	router.Methods("POST").Path("/login").HandlerFunc(users.Authenticate)
 	router.Methods("POST").Path("/logout").HandlerFunc(users.Logout)
-	router.Methods("GET").Path("/oauth").HandlerFunc(users.OauthHandler)
+	router.Methods("GET").Path("/oauth").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		users.OauthHandler(w, r, conf)
+	})
+	router.Methods("GET").Path("/loginoauth").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		users.OauthLoginHandler(w, r, conf)
+	})
 	router.Methods("GET").Path("/config").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user, loggedIn := users.CurrentUser(r)
+		log.Info().Msg("User: " + user)
 		_ = json.NewEncoder(w).Encode(&UIConfig{
 			AuthMode:                 conf.AuthMode,
 			LoggedIn:                 loggedIn,

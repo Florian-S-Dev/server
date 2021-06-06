@@ -65,6 +65,18 @@ type Config struct {
 	TurnPort     string            `ignored:"true"`
 
 	CloseRoomWhenOwnerLeaves bool `default:"true" split_words:"true"`
+
+	OpenIdProviderUrl string `split_words:"true"`
+	OAuthClientId     string `split_words:"true"`
+	OAuthClientSecret string `split_words:"true"`
+	OAuthRedirectUrl  string `split_words:"true"`
+	OAuthAuthorizeUrl string `split_words:"true"`
+	OAuthTokenUrl     string `split_words:"true"`
+	OAuthScopes       string `split_words:"true"`
+
+	UseOpenId bool `default:"true" split_words:"true"`
+
+	UserApiUrl string `split_words:"true"`
 }
 
 func (c Config) parsePortRange() (uint16, uint16, error) {

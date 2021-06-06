@@ -92,3 +92,22 @@ SCREEGO_LOG_LEVEL=info
 # If screego should expose a prometheus endpoint at /metrics. The endpoint
 # requires basic authentication from a user in the users file.
 SCREEGO_PROMETHEUS=false
+
+# Google example with Open ID login
+# Register a OAuth project by Google
+SCREEGO_USE_OPEN_ID=true
+SCREEGO_OPEN_ID_PROVIDER_URL=https://accounts.google.com
+SCREEGO_O_AUTH_CLIENT_ID=398092626340-l88l0f9l99il52688f74putao47s3f7a.apps.googleusercontent.com
+SCREEGO_O_AUTH_CLIENT_SECRET=rpAEdFhxEF4luWdGSbsTzX3W
+SCREEGO_O_AUTH_REDIRECT_URL=http://localhost:3000/oauth
+
+# Github example with OAuth2 login
+# Register a OAuth2 App by Github
+SCREEGO_USE_OPEN_ID=false
+SCREEGO_O_AUTH_CLIENT_ID=17ffadfaaa73c77584e9
+SCREEGO_O_AUTH_CLIENT_SECRET=79cd89dab8ae670ee78104bf27f279a0a1ce6923
+SCREEGO_O_AUTH_REDIRECT_URL=http://localhost:3000/oauth
+SCREEGO_O_AUTH_AUTHORIZE_URL=https://github.com/login/oauth/authorize
+SCREEGO_O_AUTH_TOKEN_URL=https://github.com/login/oauth/access_token
+SCREEGO_USER_API_URL=https://api.github.com/user
+

@@ -8,6 +8,7 @@ export interface UseConfig extends UIConfig {
     logout: () => Promise<void>;
     loading: boolean;
     oauth: () => Promise<void>;
+    loginoauth: () => Promise<string>;
 }
 
 export const useConfig = (): UseConfig => {
@@ -42,13 +43,24 @@ export const useConfig = (): UseConfig => {
     };
 
     const oauth = async () => {
-        const result = await fetch(`oauth?` + window.location.search, {method: 'GET'});
+        const result = await fetch(`oauth` + window.location.search, {method: 'GET'});
+        window.history.replaceState(null, document.title, "/")
         const json = await result.json();
         if (result.status !== 200) {
             enqueueSnackbar('OAuth Failed: ' + json.message, {variant: 'error'});
         } else {
             await refetch();
-            enqueueSnackbar('OAuth successful!', {variant: 'success'});
+            enqueueSnackbar('OAuth login successful!', {variant: 'success'});
+        }
+    };
+
+    const loginoauth = async () => {
+        const result = await fetch(`loginoauth`, {method: 'GET'});
+        const json = await result.json();
+        if (result.status !== 200) {
+            enqueueSnackbar('OAuth Failed: ' + json.message, {variant: 'error'});
+        } else {
+            return json.message
         }
     };
 
@@ -65,5 +77,5 @@ export const useConfig = (): UseConfig => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => void refetch(), []);
 
-    return {...config, refetch, loading, login, logout, oauth};
+    return {...config, refetch, loading, login, logout, oauth, loginoauth};
 };
