@@ -7,6 +7,7 @@ export interface UseConfig extends UIConfig {
     refetch: () => void;
     logout: () => Promise<void>;
     loading: boolean;
+    oauth: () => Promise<void>;
 }
 
 export const useConfig = (): UseConfig => {
@@ -40,6 +41,17 @@ export const useConfig = (): UseConfig => {
         }
     };
 
+    const oauth = async () => {
+        const result = await fetch(`oauth?` + window.location.search, {method: 'GET'});
+        const json = await result.json();
+        if (result.status !== 200) {
+            enqueueSnackbar('OAuth Failed: ' + json.message, {variant: 'error'});
+        } else {
+            await refetch();
+            enqueueSnackbar('OAuth successful!', {variant: 'success'});
+        }
+    };
+
     const logout = async () => {
         const result = await fetch(`logout`, {method: 'POST'});
         if (result.status !== 200) {
@@ -53,5 +65,5 @@ export const useConfig = (): UseConfig => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => void refetch(), []);
 
-    return {...config, refetch, loading, login, logout};
+    return {...config, refetch, loading, login, logout, oauth};
 };

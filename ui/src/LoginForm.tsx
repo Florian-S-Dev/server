@@ -18,7 +18,7 @@ export const LoginForm = ({config: {login}, hide}: {config: UseConfig; hide?: ()
     const oauth = async (event: {preventDefault: () => void}) => {
         event.preventDefault();
         setLoading(true);
-        window.location.href = `https://keycloak.brickfire.eu/auth/realms/develop/protocol/openid-connect/auth?client_id=screego_dev&redirect_uri=http://localhost:5050/oauth&response_type=code`
+        window.location.href = `https://keycloak.brickfire.eu/auth/realms/develop/protocol/openid-connect/auth?client_id=screego_dev&redirect_uri=http://localhost:3000/oauth&response_type=code&scope=openid+profile+email`
     }
     const submit = async (event: {preventDefault: () => void}) => {
         event.preventDefault();
@@ -57,6 +57,7 @@ export const LoginForm = ({config: {login}, hide}: {config: UseConfig; hide?: ()
                         margin="dense"
                     />
                     <LoadingButton
+                        style={{marginTop: 5}}
                         type="submit"
                         loading={loading}
                         onClick={submit}
@@ -64,13 +65,13 @@ export const LoginForm = ({config: {login}, hide}: {config: UseConfig; hide?: ()
                         variant="contained">
                         Login
                     </LoadingButton>
-                    <LoadingButton
-                        loading={loading}
+                    <hr/>
+                    <Button
                         onClick={oauth}
                         fullWidth
-                        variant="contained">
+                        variant="outlined">
                         oAuth
-                    </LoadingButton>
+                    </Button>
                 </form>
             </FormControl>
         </div>

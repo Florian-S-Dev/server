@@ -111,6 +111,20 @@ func (u *Users) Authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	u.SaveUser(w, r, user)
+
+	w.WriteHeader(200)
+	_ = json.NewEncoder(w).Encode(&Response{
+		Message: "authenticated",
+	})
+}
+
+func (u Users) Validate(user string, password string) bool {
+	realPassword, exists := u.Lookup[user]
+	return exists && bcrypt.CompareHashAndPassword([]byte(realPassword), []byte(password)) == nil
+}
+
+func (u *Users) SaveUser(w http.ResponseWriter,r *http.Request, user string) {
 	session := sessions.NewSession(u.store, "user")
 	session.IsNew = true
 	session.Values["user"] = user
@@ -121,13 +135,4 @@ func (u *Users) Authenticate(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	w.WriteHeader(200)
-	_ = json.NewEncoder(w).Encode(&Response{
-		Message: "authenticated",
-	})
-}
-
-func (u Users) Validate(user string, password string) bool {
-	realPassword, exists := u.Lookup[user]
-	return exists && bcrypt.CompareHashAndPassword([]byte(realPassword), []byte(password)) == nil
 }
