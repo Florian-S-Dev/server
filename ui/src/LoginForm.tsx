@@ -1,27 +1,21 @@
 import {UseConfig} from './useConfig';
 import React from 'react';
-import {
-    Button,
-    ButtonProps,
-    CircularProgress,
-    FormControl,
-    TextField,
-    Typography,
-} from '@material-ui/core';
+import {Button, ButtonProps, CircularProgress, Divider, FormControl, TextField, Typography,} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import {green} from '@material-ui/core/colors';
 
-export const LoginForm = ({config: {login, loginoauth}, hide}: {config: UseConfig; hide?: () => void}) => {
+export const LoginForm = ({
+                              config: {login, loginoauth, showLogin, showOauth},
+                              hide
+                          }: { config: UseConfig; hide?: () => void }) => {
     const [user, setUser] = React.useState('');
     const [pass, setPass] = React.useState('');
     const [loading, setLoading] = React.useState(false);
-    const oauthlogin = async (event: {preventDefault: () => void}) => {
-        event.preventDefault();
-        setLoading(true);
+    const oauthLogin = () => {
         loginoauth().then((url) => window.location.href = url)
-
     }
-    const submit = async (event: {preventDefault: () => void}) => {
+
+    const submit = async (event: { preventDefault: () => void }) => {
         event.preventDefault();
         setLoading(true);
         login(user, pass)
@@ -42,50 +36,55 @@ export const LoginForm = ({config: {login, loginoauth}, hide}: {config: UseConfi
                             </Button>
                         ) : undefined}
                     </div>
-                    <TextField
-                        fullWidth
-                        value={user}
-                        onChange={(e) => setUser(e.target.value)}
-                        label="Username"
-                        margin="dense"
-                    />
-                    <TextField
-                        fullWidth
-                        value={pass}
-                        type="password"
-                        onChange={(e) => setPass(e.target.value)}
-                        label="Password"
-                        margin="dense"
-                    />
-                    <LoadingButton
-                        style={{marginTop: 5}}
-                        type="submit"
-                        loading={loading}
-                        onClick={submit}
-                        fullWidth
-                        variant="contained">
-                        Login
-                    </LoadingButton>
-                    <hr/>
-                    <Button
-                        onClick={oauthlogin}
-                        fullWidth
-                        variant="outlined">
-                        oAuth
-                    </Button>
+                    {showLogin ? <>
+                        <TextField
+                            fullWidth
+                            value={user}
+                            onChange={(e) => setUser(e.target.value)}
+                            label="Username"
+                            margin="dense"
+                        />
+                        <TextField
+                            fullWidth
+                            value={pass}
+                            type="password"
+                            onChange={(e) => setPass(e.target.value)}
+                            label="Password"
+                            margin="dense"
+                        />
+                        <LoadingButton
+                            style={{marginTop: 5}}
+                            type="submit"
+                            loading={loading}
+                            onClick={submit}
+                            fullWidth
+                            variant="contained">
+                            Login
+                        </LoadingButton>
+                    </> : undefined}
+                    {showLogin && showOauth ? <Divider style={{marginTop: 8, marginBottom: 3}}/> : undefined}
+                    {showOauth ? (
+                        <Button
+                            style={{marginTop: 5}}
+                            onClick={oauthLogin}
+                            fullWidth
+                            variant="outlined">
+                            oAuth
+                        </Button>
+                    ) : undefined}
                 </form>
             </FormControl>
         </div>
     );
 };
 
-export const LoadingButton = ({loading, children, ...props}: ButtonProps & {loading: boolean}) => {
+export const LoadingButton = ({loading, children, ...props}: ButtonProps & { loading: boolean }) => {
     const classes = useStyles();
     return (
         <Button {...props} disabled={loading}>
             {children}
             {loading && (
-                <CircularProgress className={classes.buttonProgress} size={24} color="secondary" />
+                <CircularProgress className={classes.buttonProgress} size={24} color="secondary"/>
             )}
         </Button>
     );

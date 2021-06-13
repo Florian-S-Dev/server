@@ -11,6 +11,8 @@ export interface UIConfig {
     loggedIn: boolean;
     version: string;
     closeRoomWhenOwnerLeaves: boolean;
+    showLogin: boolean;
+    showOauth: boolean;
 }
 
 export interface RoomConfiguration {

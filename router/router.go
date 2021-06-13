@@ -22,6 +22,8 @@ type UIConfig struct {
 	LoggedIn                 bool   `json:"loggedIn"`
 	Version                  string `json:"version"`
 	CloseRoomWhenOwnerLeaves bool   `json:"closeRoomWhenOwnerLeaves"`
+	ShowLogin                bool   `json:"showLogin"`
+	ShowOauth                bool   `json:"showOauth"`
 }
 
 func Router(conf config.Config, rooms *ws.Rooms, users *auth.Users, version string) *mux.Router {
@@ -33,23 +35,28 @@ func Router(conf config.Config, rooms *ws.Rooms, users *auth.Users, version stri
 	router.Use(hlog.AccessHandler(accessLogger))
 	router.Use(handlers.CORS(handlers.AllowedMethods([]string{"GET", "POST"}), handlers.AllowedOriginValidator(conf.CheckOrigin)))
 	router.HandleFunc("/stream", rooms.Upgrade)
-	router.Methods("POST").Path("/login").HandlerFunc(users.Authenticate)
+	if conf.LoginModeBasicAuth() {
+		router.Methods("POST").Path("/login").HandlerFunc(users.Authenticate)
+	}
 	router.Methods("POST").Path("/logout").HandlerFunc(users.Logout)
-	router.Methods("GET").Path("/oauth").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		users.OauthHandler(w, r, conf)
-	})
-	router.Methods("GET").Path("/loginoauth").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		users.OauthLoginHandler(w, r, conf)
-	})
+	if conf.LoginModeOAuth() {
+		router.Methods("GET").Path("/oauth").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			users.OAuthCodeHandler(w, r, conf)
+		})
+		router.Methods("GET").Path("/loginoauth").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			users.OauthUrlCreateHandler(w, r, conf)
+		})
+	}
 	router.Methods("GET").Path("/config").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user, loggedIn := users.CurrentUser(r)
-		log.Info().Msg("User: " + user)
 		_ = json.NewEncoder(w).Encode(&UIConfig{
 			AuthMode:                 conf.AuthMode,
 			LoggedIn:                 loggedIn,
 			User:                     user,
 			Version:                  version,
 			CloseRoomWhenOwnerLeaves: conf.CloseRoomWhenOwnerLeaves,
+			ShowLogin:                conf.LoginModeBasicAuth(),
+			ShowOauth:                conf.LoginModeOAuth(),
 		})
 	})
 	if conf.Prometheus {
@@ -72,7 +79,6 @@ func accessLogger(r *http.Request, status, size int, dur time.Duration) {
 		Str("duration", dur.String()).
 		Msg("HTTP")
 }
-
 
 func basicAuth(handler http.Handler, users *auth.Users) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

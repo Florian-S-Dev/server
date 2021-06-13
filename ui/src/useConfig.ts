@@ -20,13 +20,15 @@ export const useConfig = (): UseConfig => {
         loading: true,
         version: 'unknown',
         closeRoomWhenOwnerLeaves: true,
+        showLogin: true,
+        showOauth: false,
     });
 
-    const refetch = React.useCallback(async () => {
+    const refetch = async () => {
         return fetch(`config`)
             .then((data) => data.json())
             .then(setConfig);
-    }, [setConfig]);
+    };
 
     const login = async (username: string, password: string) => {
         const body = new FormData();
@@ -43,8 +45,9 @@ export const useConfig = (): UseConfig => {
     };
 
     const oauth = async () => {
-        const result = await fetch(`oauth` + window.location.search, {method: 'GET'});
+        let search = window.location.search;
         window.history.replaceState(null, document.title, "/")
+        const result = await fetch(`oauth` + search, {method: 'GET'});
         const json = await result.json();
         if (result.status !== 200) {
             enqueueSnackbar('OAuth Failed: ' + json.message, {variant: 'error'});

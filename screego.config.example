@@ -93,6 +93,14 @@ SCREEGO_LOG_LEVEL=info
 # requires basic authentication from a user in the users file.
 SCREEGO_PROMETHEUS=false
 
+# Defines witch user login methods are possible
+# Possible values:
+#   all: OAuth and Basic auth are available
+#   oauth: only OAuth is a possible login method
+#   basic: only Basic auth with the user file is allowed and all following OAuth config will be ignored
+#   none: User login is never possible
+SCREEGO_LOGIN_MODE=basic
+
 # Google example with Open ID login
 # Register a OAuth project by Google
 SCREEGO_USE_OPEN_ID=true

@@ -89,6 +89,7 @@ func (u *Users) CurrentUser(r *http.Request) (string, bool) {
 func (u *Users) Logout(w http.ResponseWriter, r *http.Request) {
 	session := sessions.NewSession(u.store, "user")
 	session.IsNew = true
+
 	if err := u.store.Save(r, w, session); err != nil {
 		w.WriteHeader(500)
 		_ = json.NewEncoder(w).Encode(&Response{

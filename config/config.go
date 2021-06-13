@@ -66,6 +66,8 @@ type Config struct {
 
 	CloseRoomWhenOwnerLeaves bool `default:"true" split_words:"true"`
 
+	LoginMode string `default:"basic" split_words:"true"`
+
 	OpenIdProviderUrl string `split_words:"true"`
 	OAuthClientId     string `split_words:"true"`
 	OAuthClientSecret string `split_words:"true"`
@@ -75,6 +77,8 @@ type Config struct {
 	OAuthScopes       string `split_words:"true"`
 
 	UseOpenId bool `default:"true" split_words:"true"`
+
+	EmailWhitelist []string `split_words:"true"`
 
 	UserApiUrl string `split_words:"true"`
 }
@@ -100,6 +104,14 @@ func (c Config) parsePortRange() (uint16, uint16, error) {
 	}
 
 	return uint16(min64), uint16(max64), nil
+}
+
+func (c Config) LoginModeOAuth() bool {
+	return c.LoginMode == "all" || c.LoginMode == "oauth"
+}
+
+func (c Config) LoginModeBasicAuth() bool {
+	return c.LoginMode == "all" || c.LoginMode == "basic"
 }
 
 func (c Config) PortRange() (uint16, uint16, bool) {

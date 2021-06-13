@@ -13,19 +13,26 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
+	"time"
 )
 
 type oAuth struct {
-	Email    string
-	Username string
-	Name     string
+	Email string
+	Name  string
 	*oauth2.Token
 }
 
 var (
 	oauth2Config = oauth2.Config{}
-	provider *oidc.Provider
+	provider     *oidc.Provider
+	states       []oAuthState
 )
+
+type oAuthState struct {
+	time  time.Time
+	state string
+}
 
 func randString(nByte int) (string, error) {
 	b := make([]byte, nByte)
@@ -37,16 +44,12 @@ func randString(nByte int) (string, error) {
 
 func exchangeTokenOAuth(r *http.Request, conf config.Config) (*oAuth, error) {
 	code := r.URL.Query().Get("code")
-	log.Info().Msg("Code: "+code)
-
-	log.Info().Msg("Config: "+  oauth2Config.RedirectURL)
 
 	oauth2Token, err := oauth2Config.Exchange(r.Context(), code)
 	if err != nil {
 		log.Error().Err(err).Msg("No OAuth2 Token Exchange")
 		return nil, err
 	}
-	log.Info().Msg("Token: "+oauth2Token.AccessToken)
 
 	if !oauth2Token.Valid() {
 		return nil, errors.New("oauth token is not valid")
@@ -58,7 +61,7 @@ func exchangeTokenOAuth(r *http.Request, conf config.Config) (*oAuth, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("Authorization", "token " + oauth2Token.AccessToken)
+	req.Header.Add("Authorization", "token "+oauth2Token.AccessToken)
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -76,8 +79,7 @@ func exchangeTokenOAuth(r *http.Request, conf config.Config) (*oAuth, error) {
 		return nil, errors.New(resp.Status)
 	}
 	var data struct {
-		Username string `json:"preferred_username" json:"username" json:"login"`
-		Name 	 string `json:"name"`
+		Name     string `json:"name"`
 		Email    string `json:"email"`
 	}
 
@@ -88,21 +90,17 @@ func exchangeTokenOAuth(r *http.Request, conf config.Config) (*oAuth, error) {
 		return nil, err
 	}
 
-	log.Info().Msg("Email: " + data.Email + " Username: " + data.Username + " Name: " + data.Name)
+	log.Debug().Msg("Email: " + data.Email + " Name: " + data.Name)
 
 	return &oAuth{
-		Token:    oauth2Token,
-		Username: data.Username,
+		Token: oauth2Token,
 		Email: data.Email,
-		Name: data.Name,
+		Name:  data.Name,
 	}, nil
 }
 
 func exchangeTokenOpenID(r *http.Request, conf config.Config) (*oAuth, error) {
 	code := r.URL.Query().Get("code")
-	log.Info().Msg("Code: "+code)
-
-	log.Info().Msg("Provider: " + provider.Endpoint().AuthURL)
 
 	if &provider == nil {
 		log.Error().Msg("OpenID provider is not set")
@@ -111,14 +109,11 @@ func exchangeTokenOpenID(r *http.Request, conf config.Config) (*oAuth, error) {
 
 	verifier := provider.Verifier(&oidc.Config{ClientID: conf.OAuthClientId})
 
-	log.Info().Msg("Config: "+  oauth2Config.RedirectURL)
-
 	oauth2Token, err := oauth2Config.Exchange(r.Context(), code)
 	if err != nil {
 		log.Error().Msg("No OAuth2 Token Exchange")
 		return nil, err
 	}
-	log.Info().Msg("Token: "+oauth2Token.AccessToken)
 
 	if !oauth2Token.Valid() {
 		return nil, errors.New("oauth token is not valid")
@@ -137,37 +132,32 @@ func exchangeTokenOpenID(r *http.Request, conf config.Config) (*oAuth, error) {
 		return nil, err
 	}
 
-	log.Info().Msg("RawIDToken: " + rawIDToken)
-
 	var claims struct {
-		Username string `json:"preferred_username"`
-		Name 	 string `json:"name"`
-		Email    string `json:"email"`
+		Name  string `json:"name"`
+		Email string `json:"email"`
 	}
 	if err := idToken.Claims(&claims); err != nil {
 		log.Error().Msg("OpenID Claims not possible")
 		return nil, err
 	}
 
-	log.Info().Msg("Email: " + claims.Email + " Username: " + claims.Username + " Name: " + claims.Name)
-
+	log.Debug().Msg("Email: " + claims.Email + " Name: " + claims.Name)
 
 	return &oAuth{
-		Token:    oauth2Token,
-		Username: claims.Username,
+		Token: oauth2Token,
 		Email: claims.Email,
-		Name: claims.Name,
+		Name:  claims.Name,
 	}, nil
 }
 
+func (u *Users) OauthUrlCreateHandler(w http.ResponseWriter, r *http.Request, conf config.Config) {
 
-func (u *Users) OauthLoginHandler(w http.ResponseWriter, r *http.Request, conf config.Config) {
-
+	// create "oauth2Config" for OpenID Connect or only OAuth2
 	if conf.UseOpenId {
 		var err error
 		provider, err = oidc.NewProvider(r.Context(), conf.OpenIdProviderUrl)
 		if err != nil {
-			log.Error().Msg("OpenID provider is not working")
+			log.Error().Err(err).Msg("OpenID provider is not working")
 			w.WriteHeader(401)
 			_ = json.NewEncoder(w).Encode(&Response{
 				Message: err.Error(),
@@ -180,26 +170,26 @@ func (u *Users) OauthLoginHandler(w http.ResponseWriter, r *http.Request, conf c
 			ClientSecret: conf.OAuthClientSecret,
 			RedirectURL:  conf.OAuthRedirectUrl,
 
-			// Discovery returns the OAuth2 endpoints.
+			// Discovery returns the OAuth2 endpoints
 			Endpoint: provider.Endpoint(),
 
-			// "openid" is a required scope for OpenID Connect flows.
-			Scopes: []string{oidc.ScopeOpenID, "profile", "email", "address"},
+			// "openid" is a required scope for OpenID Connect flows
+			Scopes: []string{oidc.ScopeOpenID, "profile", "email"},
 		}
-	}else{
+	} else {
 		oauth2Config = oauth2.Config{
 			ClientID:     conf.OAuthClientId,
 			ClientSecret: conf.OAuthClientSecret,
 			RedirectURL:  conf.OAuthRedirectUrl,
 
-			// Discovery returns the OAuth2 endpoints.
+			// OAuth2 endpoints from config.
 			Endpoint: oauth2.Endpoint{
 				AuthURL:  conf.OAuthAuthorizeUrl,
 				TokenURL: conf.OAuthTokenUrl,
 			},
 
-			// "openid" is a required scope for OpenID Connect flows.
-			Scopes: []string{"profile", "email", "address"},
+			// no "openid": service is not expected to be capable of OpenID Connect flows
+			Scopes: []string{"profile", "email"},
 		}
 	}
 
@@ -216,21 +206,33 @@ func (u *Users) OauthLoginHandler(w http.ResponseWriter, r *http.Request, conf c
 	_ = json.NewEncoder(w).Encode(&Response{
 		Message: oauth2Config.AuthCodeURL(state),
 	})
+	states = append(states, oAuthState{state: state, time: time.Now()})
 	return
 }
 
-func (u *Users) OauthHandler(w http.ResponseWriter, r *http.Request, conf config.Config) {
-	log.Info().Msg("Fine +1")
-	var err error
-	var oauth *oAuth
+func (u *Users) OAuthCodeHandler(w http.ResponseWriter, r *http.Request, conf config.Config) {
+
+	if !ValidateOAuthState(r.URL.Query().Get("state"), states){
+		log.Error().Msg("State mismatch response rejected")
+		w.WriteHeader(401)
+		_ = json.NewEncoder(w).Encode(&Response{
+			Message: "response rejected (maybe you took too long to login?)",
+		})
+		return
+	}
+
+	var (
+		err   error
+		oauth *oAuth
+	)
 	if conf.UseOpenId {
 		oauth, err = exchangeTokenOpenID(r, conf)
-	}else{
+	} else {
 		oauth, err = exchangeTokenOAuth(r, conf)
 	}
 
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Error().Err(err)
 		w.WriteHeader(401)
 		_ = json.NewEncoder(w).Encode(&Response{
 			Message: err.Error(),
@@ -238,12 +240,64 @@ func (u *Users) OauthHandler(w http.ResponseWriter, r *http.Request, conf config
 		return
 	}
 
-	log.Info().Msg(fmt.Sprintf("OAuth type: %s User: %s", oauth.Type(), oauth.Name))
+	// Check if email is on the possible whitelist
+	if len(conf.EmailWhitelist) > 0 {
+		if !ValidateWhitelist(oauth.Email, conf.EmailWhitelist) {
+			log.Info().Msg(fmt.Sprintf("OAuth User: %s(%s) is not whitelisted but tried to login", oauth.Name, oauth.Email))
+			w.WriteHeader(403)
+			_ = json.NewEncoder(w).Encode(&Response{
+				Message: "You are not allowed to login",
+			})
+			return
+		}
+	}
 
+	// Log user access
+	log.Info().Msg(fmt.Sprintf("OAuth Login: %s(%s)", oauth.Name, oauth.Email))
+
+	// Save user to the cookies - user save is the same aus Basic auth
 	u.SaveUser(w, r, oauth.Name)
 
 	w.WriteHeader(200)
 	_ = json.NewEncoder(w).Encode(&Response{
 		Message: "authenticated",
 	})
+}
+
+// ValidateWhitelist checks if the email is whitelisted.
+// Two cases are possible the exact email is present or
+// a address starts with *@domain.td every @domain.td is accepted
+func ValidateWhitelist(email string, whitelist []string) bool {
+	for _, whitelist := range whitelist {
+		if strings.HasPrefix(whitelist, "*") {
+			if strings.HasSuffix(email, strings.Split(whitelist, "*")[1]) {
+				return true
+			}
+		}
+		if email == whitelist {
+			return true
+		}
+	}
+	return false
+}
+
+func ValidateOAuthState(state string, states []oAuthState) bool{
+	for _, authState := range states {
+		if authState.state == state {
+			RemoveOldOAuthStates(state)
+			return true
+		}
+	}
+	RemoveOldOAuthStates(state)
+	return false
+}
+
+func RemoveOldOAuthStates(state string) {
+	var newStates []oAuthState
+	for _, authState := range states {
+		if time.Now().Sub(authState.time) < time.Minute * 20  && authState.state != state {
+			newStates = append(newStates, authState)
+		}
+	}
+	states = newStates
 }

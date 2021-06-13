@@ -9,7 +9,6 @@ export const Router = () => {
     const {room, state, ...other} = useRoom();
     const config = useConfig();
 
-
     if (config.loading) {
         // show spinner
         return null;
