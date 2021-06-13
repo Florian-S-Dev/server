@@ -66,7 +66,12 @@ func exchangeTokenOAuth(r *http.Request, conf config.Config) (*oAuth, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Error().Err(err).Msg("Unable to read response body: ")
+		}
+	}(resp.Body)
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -79,8 +84,8 @@ func exchangeTokenOAuth(r *http.Request, conf config.Config) (*oAuth, error) {
 		return nil, errors.New(resp.Status)
 	}
 	var data struct {
-		Name     string `json:"name"`
-		Email    string `json:"email"`
+		Name  string `json:"name"`
+		Email string `json:"email"`
 	}
 
 	err = json.Unmarshal(body, &data)
@@ -102,7 +107,7 @@ func exchangeTokenOAuth(r *http.Request, conf config.Config) (*oAuth, error) {
 func exchangeTokenOpenID(r *http.Request, conf config.Config) (*oAuth, error) {
 	code := r.URL.Query().Get("code")
 
-	if &provider == nil {
+	if nil == provider {
 		log.Error().Msg("OpenID provider is not set")
 		return nil, errors.New("OpenID provider is not set")
 	}
@@ -207,12 +212,11 @@ func (u *Users) OauthUrlCreateHandler(w http.ResponseWriter, r *http.Request, co
 		Message: oauth2Config.AuthCodeURL(state),
 	})
 	states = append(states, oAuthState{state: state, time: time.Now()})
-	return
 }
 
 func (u *Users) OAuthCodeHandler(w http.ResponseWriter, r *http.Request, conf config.Config) {
 
-	if !ValidateOAuthState(r.URL.Query().Get("state"), states){
+	if !ValidateOAuthState(r.URL.Query().Get("state"), states) {
 		log.Error().Msg("State mismatch response rejected")
 		w.WriteHeader(401)
 		_ = json.NewEncoder(w).Encode(&Response{
@@ -281,7 +285,7 @@ func ValidateWhitelist(email string, whitelist []string) bool {
 	return false
 }
 
-func ValidateOAuthState(state string, states []oAuthState) bool{
+func ValidateOAuthState(state string, states []oAuthState) bool {
 	for _, authState := range states {
 		if authState.state == state {
 			RemoveOldOAuthStates(state)
@@ -295,7 +299,7 @@ func ValidateOAuthState(state string, states []oAuthState) bool{
 func RemoveOldOAuthStates(state string) {
 	var newStates []oAuthState
 	for _, authState := range states {
-		if time.Now().Sub(authState.time) < time.Minute * 20  && authState.state != state {
+		if time.Since(authState.time) < time.Minute*20 && authState.state != state {
 			newStates = append(newStates, authState)
 		}
 	}
