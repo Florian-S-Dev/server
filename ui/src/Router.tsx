@@ -4,7 +4,6 @@ import {useRoom} from './useRoom';
 import {Room} from './Room';
 import {useConfig} from './useConfig';
 
-
 export const Router = () => {
     const {room, state, ...other} = useRoom();
     const config = useConfig();

@@ -35,7 +35,7 @@ const defaultMode = (authMode: UIConfig['authMode'], loggedIn: boolean): RoomMod
     }
 };
 
-const CreateRoom = ({room, config}: Pick<UseRoom, 'room'> & { config: UIConfig }) => {
+const CreateRoom = ({room, config}: Pick<UseRoom, 'room'> & {config: UIConfig}) => {
     const [id, setId] = React.useState(
         () => getRoomFromURL(window.location.search) ?? randomRoomName()
     );
@@ -88,16 +88,16 @@ const CreateRoom = ({room, config}: Pick<UseRoom, 'room'> & { config: UIConfig }
     );
 };
 
-export const RoomManage = ({room, config}: { room: FCreateRoom; config: UseConfig }) => {
+export const RoomManage = ({room, config}: {room: FCreateRoom; config: UseConfig}) => {
     const [showLogin, setShowLogin] = React.useState(false);
     const [oauthLoading, setOauthLoading] = React.useState(false);
 
     const canCreateRoom = config.authMode !== 'all';
     const loginVisible = !config.loggedIn && (showLogin || !canCreateRoom);
 
-    if (!oauthLoading && window.location.pathname === "/oauth") {
-        setOauthLoading(true)
-        config.oauth().finally(() => setOauthLoading(false))
+    if (!oauthLoading && window.location.pathname === '/oauth') {
+        setOauthLoading(true);
+        config.oauth().finally(() => setOauthLoading(false));
     }
 
     return (
@@ -108,43 +108,47 @@ export const RoomManage = ({room, config}: { room: FCreateRoom; config: UseConfi
             spacing={4}>
             <Grid item xs={12}>
                 <Typography align="center" gutterBottom>
-                    <img src={logo} style={{width: 230}} alt="logo"/>
+                    <img src={logo} style={{width: 230}} alt="logo" />
                 </Typography>
                 <Paper elevation={3} style={{padding: 20}}>
-                    {oauthLoading ?
+                    {oauthLoading ? (
                         <div style={{display: 'flex', justifyContent: 'center'}}>
-                            <CircularProgress/>
-                        </div> : (
-                            <>
-                                {loginVisible ? (
-                                    <LoginForm
-                                        config={config}
-                                        hide={canCreateRoom ? () => setShowLogin(false) : undefined}
-                                    />
-                                ) : (
-                                    <>
-                                        {config.showOauth || config.showLogin ?
-                                            <Typography style={{display: 'flex', alignItems: 'center'}}>
-                                                <span style={{flex: 1}}>Hello {config.user}!</span>{' '}
-                                                {config.loggedIn ? (
-                                                    <Button variant="outlined" size="small" onClick={config.logout}>
-                                                        Logout
-                                                    </Button>
-                                                ) : (
-                                                    <Button
-                                                        variant="outlined"
-                                                        size="small"
-                                                        onClick={() => setShowLogin(true)}>
-                                                        Login
-                                                    </Button>
-                                                )}
-                                            </Typography>
-                                            : undefined}
-                                        <CreateRoom room={room} config={config}/>
-                                    </>
-                                )}
-                            </>
-                        )}
+                            <CircularProgress />
+                        </div>
+                    ) : (
+                        <>
+                            {loginVisible ? (
+                                <LoginForm
+                                    config={config}
+                                    hide={canCreateRoom ? () => setShowLogin(false) : undefined}
+                                />
+                            ) : (
+                                <>
+                                    {config.showOauth || config.showLogin ? (
+                                        <Typography style={{display: 'flex', alignItems: 'center'}}>
+                                            <span style={{flex: 1}}>Hello {config.user}!</span>{' '}
+                                            {config.loggedIn ? (
+                                                <Button
+                                                    variant="outlined"
+                                                    size="small"
+                                                    onClick={config.logout}>
+                                                    Logout
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    variant="outlined"
+                                                    size="small"
+                                                    onClick={() => setShowLogin(true)}>
+                                                    Login
+                                                </Button>
+                                            )}
+                                        </Typography>
+                                    ) : undefined}
+                                    <CreateRoom room={room} config={config} />
+                                </>
+                            )}
+                        </>
+                    )}
                 </Paper>
             </Grid>
             <div style={{position: 'absolute', margin: '0 auto', bottom: 0}}>

@@ -46,7 +46,7 @@ export const useConfig = (): UseConfig => {
 
     const oauth = async () => {
         let search = window.location.search;
-        window.history.replaceState(null, document.title, "/")
+        window.history.replaceState(null, document.title, '/');
         const result = await fetch(`oauth` + search, {method: 'GET'});
         const json = await result.json();
         if (result.status !== 200) {
@@ -63,7 +63,7 @@ export const useConfig = (): UseConfig => {
         if (result.status !== 200) {
             enqueueSnackbar('OAuth Failed: ' + json.message, {variant: 'error'});
         } else {
-            return json.message
+            return json.message;
         }
     };
 
