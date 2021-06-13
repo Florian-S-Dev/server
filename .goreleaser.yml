@@ -52,9 +52,9 @@ dockers:
     binaries:
       - screego
     image_templates:
-      - "screego/server:amd64-unstable"
-      - "screego/server:amd64-{{ .RawVersion }}"
-      - "screego/server:amd64-{{ .Major }}"
+      - "floriansdev/screego-dev:amd64-unstable"
+      - "floriansdev/screego-dev:amd64-{{ .RawVersion }}"
+      - "floriansdev/screego-dev:amd64-{{ .Major }}"
     dockerfile: Dockerfile
     build_flag_templates:
       - "--label=org.opencontainers.image.created={{.Date}}"
@@ -67,9 +67,9 @@ dockers:
       - screego
     goarm: ''
     image_templates:
-      - "screego/server:386-unstable"
-      - "screego/server:386-{{ .RawVersion }}"
-      - "screego/server:386-{{ .Major }}"
+      - "floriansdev/screego-dev:386-unstable"
+      - "floriansdev/screego-dev:386-{{ .RawVersion }}"
+      - "floriansdev/screego-dev:386-{{ .Major }}"
     dockerfile: Dockerfile
     build_flag_templates:
       - "--label=org.opencontainers.image.created={{.Date}}"
@@ -82,9 +82,9 @@ dockers:
     binaries:
       - screego
     image_templates:
-      - "screego/server:arm64-unstable"
-      - "screego/server:arm64-{{ .RawVersion }}"
-      - "screego/server:arm64-{{ .Major }}"
+      - "floriansdev/screego-dev:arm64-unstable"
+      - "floriansdev/screego-dev:arm64-{{ .RawVersion }}"
+      - "floriansdev/screego-dev:arm64-{{ .Major }}"
     dockerfile: Dockerfile
     build_flag_templates:
       - "--label=org.opencontainers.image.created={{.Date}}"
@@ -97,9 +97,9 @@ dockers:
     binaries:
       - screego
     image_templates:
-      - "screego/server:armv7-unstable"
-      - "screego/server:armv7-{{ .RawVersion }}"
-      - "screego/server:armv7-{{ .Major }}"
+      - "floriansdev/screego-dev:armv7-unstable"
+      - "floriansdev/screego-dev:armv7-{{ .RawVersion }}"
+      - "floriansdev/screego-dev:armv7-{{ .Major }}"
     dockerfile: Dockerfile
     build_flag_templates:
       - "--label=org.opencontainers.image.created={{.Date}}"
@@ -112,9 +112,9 @@ dockers:
     binaries:
       - screego
     image_templates:
-      - "screego/server:armv6-unstable"
-      - "screego/server:armv6-{{ .RawVersion }}"
-      - "screego/server:armv6-{{ .Major }}"
+      - "floriansdev/screego-dev:armv6-unstable"
+      - "floriansdev/screego-dev:armv6-{{ .RawVersion }}"
+      - "floriansdev/screego-dev:armv6-{{ .Major }}"
     dockerfile: Dockerfile
     build_flag_templates:
       - "--label=org.opencontainers.image.created={{.Date}}"
@@ -127,9 +127,9 @@ dockers:
     binaries:
       - screego
     image_templates:
-      - "screego/server:ppc64le-unstable"
-      - "screego/server:ppc64le-{{ .RawVersion }}"
-      - "screego/server:ppc64le-{{ .Major }}"
+      - "floriansdev/screego-dev:ppc64le-unstable"
+      - "floriansdev/screego-dev:ppc64le-{{ .RawVersion }}"
+      - "floriansdev/screego-dev:ppc64le-{{ .Major }}"
     dockerfile: Dockerfile
     build_flag_templates:
       - "--label=org.opencontainers.image.created={{.Date}}"

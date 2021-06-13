@@ -5,21 +5,21 @@ docker-login-ci:
 
 docker-manifest-annotate:
 	echo ${VERSION}
-	${DOCKER_MANIFEST} create --amend "screego/server:unstable"     "screego/server:amd64-unstable"     "screego/server:386-unstable"     "screego/server:armv7-unstable"     "screego/server:arm64-unstable"     "screego/server:ppc64le-unstable"
-	${DOCKER_MANIFEST} create --amend "screego/server:${VERSION}" "screego/server:amd64-${VERSION}" "screego/server:386-${VERSION}" "screego/server:armv7-${VERSION}" "screego/server:arm64-${VERSION}" "screego/server:ppc64le-${VERSION}"
-	${DOCKER_MANIFEST} annotate "screego/server:unstable"     "screego/server:amd64-unstable"       --os=linux --arch=amd64
-	${DOCKER_MANIFEST} annotate "screego/server:${VERSION}" "screego/server:amd64-${VERSION}"   --os=linux --arch=amd64
-	${DOCKER_MANIFEST} annotate "screego/server:unstable"     "screego/server:386-unstable"         --os=linux --arch=386
-	${DOCKER_MANIFEST} annotate "screego/server:${VERSION}" "screego/server:386-${VERSION}"     --os=linux --arch=386
-	${DOCKER_MANIFEST} annotate "screego/server:unstable"     "screego/server:armv7-unstable"       --os=linux --arch=arm --variant=v7
-	${DOCKER_MANIFEST} annotate "screego/server:${VERSION}" "screego/server:armv7-${VERSION}"   --os=linux --arch=arm --variant=v7
-	${DOCKER_MANIFEST} annotate "screego/server:unstable"     "screego/server:arm64-unstable"       --os=linux --arch=arm64
-	${DOCKER_MANIFEST} annotate "screego/server:${VERSION}" "screego/server:arm64-${VERSION}"   --os=linux --arch=arm64
-	${DOCKER_MANIFEST} annotate "screego/server:unstable"     "screego/server:ppc64le-unstable"     --os=linux --arch=ppc64le
-	${DOCKER_MANIFEST} annotate "screego/server:${VERSION}" "screego/server:ppc64le-${VERSION}" --os=linux --arch=ppc64le
+	${DOCKER_MANIFEST} create --amend "floriansdev/screego-dev:unstable"     "floriansdev/screego-dev:amd64-unstable"     "floriansdev/screego-dev:386-unstable"     "floriansdev/screego-dev:armv7-unstable"     "floriansdev/screego-dev:arm64-unstable"     "floriansdev/screego-dev:ppc64le-unstable"
+	${DOCKER_MANIFEST} create --amend "floriansdev/screego-dev:${VERSION}" "floriansdev/screego-dev:amd64-${VERSION}" "floriansdev/screego-dev:386-${VERSION}" "floriansdev/screego-dev:armv7-${VERSION}" "floriansdev/screego-dev:arm64-${VERSION}" "floriansdev/screego-dev:ppc64le-${VERSION}"
+	${DOCKER_MANIFEST} annotate "floriansdev/screego-dev:unstable"     "floriansdev/screego-dev:amd64-unstable"       --os=linux --arch=amd64
+	${DOCKER_MANIFEST} annotate "floriansdev/screego-dev:${VERSION}" "floriansdev/screego-dev:amd64-${VERSION}"   --os=linux --arch=amd64
+	${DOCKER_MANIFEST} annotate "floriansdev/screego-dev:unstable"     "floriansdev/screego-dev:386-unstable"         --os=linux --arch=386
+	${DOCKER_MANIFEST} annotate "floriansdev/screego-dev:${VERSION}" "floriansdev/screego-dev:386-${VERSION}"     --os=linux --arch=386
+	${DOCKER_MANIFEST} annotate "floriansdev/screego-dev:unstable"     "floriansdev/screego-dev:armv7-unstable"       --os=linux --arch=arm --variant=v7
+	${DOCKER_MANIFEST} annotate "floriansdev/screego-dev:${VERSION}" "floriansdev/screego-dev:armv7-${VERSION}"   --os=linux --arch=arm --variant=v7
+	${DOCKER_MANIFEST} annotate "floriansdev/screego-dev:unstable"     "floriansdev/screego-dev:arm64-unstable"       --os=linux --arch=arm64
+	${DOCKER_MANIFEST} annotate "floriansdev/screego-dev:${VERSION}" "floriansdev/screego-dev:arm64-${VERSION}"   --os=linux --arch=arm64
+	${DOCKER_MANIFEST} annotate "floriansdev/screego-dev:unstable"     "floriansdev/screego-dev:ppc64le-unstable"     --os=linux --arch=ppc64le
+	${DOCKER_MANIFEST} annotate "floriansdev/screego-dev:${VERSION}" "floriansdev/screego-dev:ppc64le-${VERSION}" --os=linux --arch=ppc64le
 
 
 docker-manifest-push:
-	${DOCKER_MANIFEST} push "screego/server:${VERSION}"
-	${DOCKER_MANIFEST} push "screego/server:unstable"
+	${DOCKER_MANIFEST} push "floriansdev/screego-dev:${VERSION}"
+	${DOCKER_MANIFEST} push "floriansdev/screego-dev:unstable"
 
