@@ -1,4 +1,4 @@
-FROM scratch
+FROM alpine:latest
 COPY screego /screego
 EXPOSE 3478/tcp
 EXPOSE 3478/udp
