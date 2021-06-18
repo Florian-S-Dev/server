@@ -173,7 +173,7 @@ func (u *Users) OauthUrlCreateHandler(w http.ResponseWriter, r *http.Request, co
 		oauth2Config = oauth2.Config{
 			ClientID:     conf.OAuthClientId,
 			ClientSecret: conf.OAuthClientSecret,
-			RedirectURL:  conf.OAuthRedirectUrl,
+			RedirectURL:  conf.OAuthRedirectUrl + "/oauth",
 
 			// Discovery returns the OAuth2 endpoints
 			Endpoint: provider.Endpoint(),
@@ -185,7 +185,7 @@ func (u *Users) OauthUrlCreateHandler(w http.ResponseWriter, r *http.Request, co
 		oauth2Config = oauth2.Config{
 			ClientID:     conf.OAuthClientId,
 			ClientSecret: conf.OAuthClientSecret,
-			RedirectURL:  conf.OAuthRedirectUrl,
+			RedirectURL:  conf.OAuthRedirectUrl + "/oauth",
 
 			// OAuth2 endpoints from config.
 			Endpoint: oauth2.Endpoint{
@@ -261,11 +261,13 @@ func (u *Users) OAuthCodeHandler(w http.ResponseWriter, r *http.Request, conf co
 
 	// Save user to the cookies - user save is the same aus Basic auth
 	u.SaveUser(w, r, oauth.Name)
+	
+	http.Redirect(w, r, conf.OAuthRedirectUrl, http.StatusPermanentRedirect)
 
-	w.WriteHeader(200)
-	_ = json.NewEncoder(w).Encode(&Response{
-		Message: "authenticated",
-	})
+	//w.WriteHeader(200)
+	//_ = json.NewEncoder(w).Encode(&Response{
+	//	Message: "authenticated",
+	//})
 }
 
 // ValidateWhitelist checks if the email is whitelisted.
