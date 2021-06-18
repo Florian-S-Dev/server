@@ -111,7 +111,7 @@ SCREEGO_LOGIN_MODE=basic
 #SCREEGO_OPEN_ID_PROVIDER_URL=https://accounts.google.com # The Provider URL is the URL with a well-known entry for Open ID. This is added to the URL (do not write it) /.well-known/openid-configuration
 #SCREEGO_O_AUTH_CLIENT_ID=<client-id>
 #SCREEGO_O_AUTH_CLIENT_SECRET=<client-secret>
-#SCREEGO_O_AUTH_REDIRECT_URL=https://<domain.td>/oauth # The Redirect URL is the URL to witch the OAuth provider is giving back the user data. e.g. http://domain.td/oauth (it has to and on /oauth)
+#SCREEGO_O_AUTH_REDIRECT_URL=https://<domain.td> # The Redirect URL is the URL to witch the OAuth provider is giving back the user data. e.g. http://domain.td
 
 # Github example with OAuth2 login
 # Register a OAuth App by Github https://github.com/settings/applications/new
@@ -121,7 +121,7 @@ SCREEGO_LOGIN_MODE=basic
 #SCREEGO_O_AUTH_AUTHORIZE_URL=https://github.com/login/oauth/authorize # The Auth and Token URLs for GitHub: https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps
 #SCREEGO_O_AUTH_TOKEN_URL=https://github.com/login/oauth/access_token
 #SCREEGO_USER_API_URL=https://api.github.com/user # The API is required. GET request with a header "Authorization: token OAUTH-ACCESS-TOKEN" and as a response is json with a name and email value expected
-#SCREEGO_O_AUTH_REDIRECT_URL=https://domain.td/oauth # The Redirect URL is the URL to witch the OAuth provider is giving back the user data. e.g. http://domain.td/oauth (it has to and on /oauth)
+#SCREEGO_O_AUTH_REDIRECT_URL=https://domain.td # The Redirect URL is the URL to witch the OAuth provider is giving back the user data. e.g. http://domain.td
 
 # Keycloak example with OpenID Connect
 #SCREEGO_USE_OPEN_ID=true
@@ -133,7 +133,7 @@ SCREEGO_LOGIN_MODE=basic
 #OAuth requirements
 SCREEGO_O_AUTH_CLIENT_ID=<client-id> # You can get it from your OAuth Provider
 SCREEGO_O_AUTH_CLIENT_SECRET=<client-secret> # You can get it from your OAuth Provider (will never be exposed)
-SCREEGO_O_AUTH_REDIRECT_URL=https://<domain.td>/oauth # Just replace <domain.td> with your domain
+SCREEGO_O_AUTH_REDIRECT_URL=https://<domain.td> # Just replace <domain.td> with your FQDN
 
 # Open ID Connect
 SCREEGO_USE_OPEN_ID=true # Use OpenID Connect
